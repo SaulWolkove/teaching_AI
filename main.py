@@ -1,9 +1,8 @@
 from openai import OpenAI
 
 
-
 client = OpenAI(
-    api_key="sk-proj-CgIu1HnlSr7ku7sZvJ9lT3BlbkFJ3S2ddRyNkFlUd89AvWmT",
+    api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH",
 )
 def chat_with_gpt(prompt):
     chat_completion = client.chat.completions.create(
