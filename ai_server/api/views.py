@@ -1,7 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from openai import OpenAI
-
+from .models import AddResponse
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import AddResponseSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -23,3 +28,12 @@ def main(request,prompt):
         return chat_completion.choices[0].message.content.strip()
 
     return HttpResponse(chat_with_gpt(prompt))
+
+@api_view(['POST'])
+def send_data(request):
+    if request.method == 'POST':
+        serializer = AddResponseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
