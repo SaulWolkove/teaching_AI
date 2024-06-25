@@ -1,12 +1,14 @@
 import { useState } from "react"
-import getResponse from "../APIs"
+import {getResponse, postPair} from "../APIs"
 
 
 export default function Tester(){
 
     const [prompt,setPrompt] = useState("");
     const [response,setResponse] = useState("");
-
+    const [difficulty,setDifficulty] = useState("");
+    const [topic,setTopic] = useState("");
+    
     const submitPrompt = async (e) => {
         e.preventDefault();
         console.log(prompt)
@@ -19,6 +21,15 @@ export default function Tester(){
         }
     };
 
+    const submitPair = () => {
+        if( prompt === "" || response === ""){
+            return
+        }
+        else{
+            postPair(prompt, response)
+        }
+    }
+
     return(
         <div>
             <form onSubmit={(e)=>submitPrompt(e)}>
@@ -28,6 +39,7 @@ export default function Tester(){
             <div>
                 Here: {response}
             </div>
+            <button onClick = {submitPair}>Submit prompt/response pair for database</button>
         </div>
     )
 }

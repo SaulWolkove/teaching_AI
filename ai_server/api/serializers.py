@@ -1,9 +1,14 @@
 # serializers.py
-
 from rest_framework import serializers
-from .models import AddResponse
+from .models import GPTTraining, HeavyTraining
 
-class AddResponseSerializer(serializers.ModelSerializer):
+class GPTTrainingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AddResponse
+        model = GPTTraining
+        fields = '__all__'
+
+
+class HeavyTrainingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HeavyTraining
         fields = '__all__'

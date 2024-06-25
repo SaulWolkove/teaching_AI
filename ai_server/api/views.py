@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from openai import OpenAI
-from .models import AddResponse
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import AddResponseSerializer
+from .serializers import GPTTrainingSerializer, HeavyTrainingSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -32,8 +31,11 @@ def main(request,prompt):
 @api_view(['POST'])
 def send_data(request):
     if request.method == 'POST':
-        serializer = AddResponseSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        GPTserializer = GPTTrainingSerializer(data=request.data)
+        Heavyserializer = HeavyTrainingSerializer(data = request.data)
+        if GPTserializer.is_valid() and Heavyserializer.is_valid():
+            GPTserializer.save()
+            Heavyserializer.save()
+
+            return Response(GPTserializer.data, status=status.HTTP_201_CREATED)
+        return Response(GPTserializer.errors, status=status.HTTP_400_BAD_REQUEST)

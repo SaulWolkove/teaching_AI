@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import AddResponse
+from .models import GPTTraining, HeavyTraining
 
 # Register your model here
-admin.site.register(AddResponse)
+admin.site.register(GPTTraining)
+admin.site.register(HeavyTraining)
