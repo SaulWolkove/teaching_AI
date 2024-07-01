@@ -8,18 +8,19 @@ import FormLabel from '@mui/material/FormLabel';
 import { Button, Typography, TextField } from "@mui/material";
 
 
-export default function PromptMenu({submitPrompt}){
-    const [prompt,setPrompt] = useState("");
+export default function PromptMenu({submitPrompt, setTopic, setDifficulty, difficulty, topic}){
+    
+
     
 
     return(
         <div style={{height:"calc(100vh - 80px)", justifyContent:"center", alignItems:"center", display:"flex"}}>
-            <form onSubmit={(e)=>submitPrompt(e,prompt)} style={{borderRadius:"20px", marginTop:"20px", padding:"20px", backgroundColor:"#D0DED8",}}>
+            <form onSubmit={(e)=>submitPrompt(e,topic, difficulty)} style={{borderRadius:"20px", marginTop:"20px", padding:"20px", backgroundColor:"#D0DED8",}}>
                 {/* 
                 Topic Input
                 */}
                 <Typography variant="button" sx={{textAlign:"center", color:"grey"}}>Create Your Own Questions and Answers</Typography>
-                <TextField fullWidth label="Topic" id="fullWidth" type="text" onChange={(e)=>setPrompt(e.target.value)} sx={{borderRadius:"30px"}}></TextField>
+                <TextField fullWidth label="Topic" id="fullWidth" type="text" onChange={(e)=>setTopic(e.target.value)} sx={{borderRadius:"30px"}}></TextField>
                 {/* 
                 Difficulty level options 
                 */}
@@ -29,6 +30,7 @@ export default function PromptMenu({submitPrompt}){
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
+                        onChange={(event)=>setDifficulty(event.target.value)}
                     >
                         <FormControlLabel value="Easy" control={<Radio />} label="Easy" />
                         <FormControlLabel value="Medium" control={<Radio />} label="Medium" />

@@ -1,6 +1,6 @@
-async function getResponse(prompt) {
+async function getResponse(topic, difficulty,questionType) {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/${prompt}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/response/${topic}/${difficulty}/${questionType}`, {
             method: "GET",
             headers: {
                 'X-CSRFToken': "rbOUQhj5iY88sLgWVJgyEtmVCh6BwWGl"
@@ -17,7 +17,7 @@ async function getResponse(prompt) {
     }
 }
 
-async function postPair(prompt,returned) {
+async function postPair(prompt,returned, difficulty, topic) {
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/save/`, {
             method: "POST",
@@ -27,7 +27,9 @@ async function postPair(prompt,returned) {
             },
             body: JSON.stringify({
                 prompt: prompt,
-                response: returned
+                response: returned,
+                difficulty: difficulty,
+                topic: topic
             })
         });
 

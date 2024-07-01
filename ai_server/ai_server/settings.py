@@ -33,6 +33,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     # Add other origins as needed
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 # Application definition
 
