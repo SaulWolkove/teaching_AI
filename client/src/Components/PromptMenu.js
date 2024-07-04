@@ -15,7 +15,7 @@ export default function PromptMenu({submitPrompt, setTopic, setDifficulty, diffi
 
     return(
         <div style={{height:"calc(100vh - 80px)", justifyContent:"center", alignItems:"center", display:"flex"}}>
-            <form onSubmit={(e)=>submitPrompt(e,topic, difficulty)} style={{borderRadius:"20px", marginTop:"20px", padding:"20px", backgroundColor:"#D0DED8",}}>
+            <form onSubmit={(e)=>submitPrompt(e,topic, difficulty,"MC")} style={{borderRadius:"20px", marginTop:"20px", padding:"20px", backgroundColor:"#D0DED8",}}>
                 {/* 
                 Topic Input
                 */}

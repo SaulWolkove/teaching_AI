@@ -12,11 +12,15 @@ function App() {
   const [difficulty,setDifficulty] = useState("");
   
 
-    const submitPrompt = async (e, topic, difficulty) => {
+    const submitPrompt = async (e, topic, difficulty, questionType) => {
         e.preventDefault();
         try {
-            let responseData = await getResponse(topic, difficulty,"Multiple Choice");
-            responseData = fileQuestion(responseData)
+            let responseData = await getResponse(topic, difficulty,questionType);
+            if(questionType == "MC"){
+              responseData = fileQuestionMC(responseData)
+            } else if (questionType == "TF"){
+              responseData = fileQuestionTF(responseData)
+            }
             setResponse(responseData); // Update state with the response data
         } catch (error) {
             console.error('Error fetching response:', error);
@@ -24,28 +28,45 @@ function App() {
         }
     }
 
-    const fileQuestion =(str)=>{
+    const fileQuestionMC = (str) => {
       let startOfQuestion = str.indexOf("Question: ") + "Question: ".length;
       let endOfQuestions = str.indexOf("Options:");
       let lengthOfPreceding = "Options:".length;
-      if(endOfQuestions == -1){
-        endOfQuestions = str.indexOf("A)");
-        lengthOfPreceding = 2;
+      
+      if (endOfQuestions === -1) {
+          endOfQuestions = str.indexOf("A)");
+          lengthOfPreceding = 2;
       }
-      let question = str.slice(startOfQuestion,endOfQuestions);
+  
+      let question = str.slice(startOfQuestion, endOfQuestions).trim();
       let startOfOptions = endOfQuestions + lengthOfPreceding;
       let endOfOptions = str.indexOf("Answer:");
-      let options = str.slice(startOfOptions,endOfOptions);
-      let answer = str.slice(endOfOptions + "ANswer:".length);
+      let options = str.slice(startOfOptions-2, endOfOptions).split("\n");
+
+      options = options.slice(0,4);
+  
+      let answer = str.slice(endOfOptions + "Answer:".length).trim();
 
       const filtered = {
-        questions: question,
-        options: options,
-        answer: answer
+          question: question,
+          options: options,
+          answer: answer
+      };
+  
+      return filtered;
+  };
 
-      }
-      console.log(filtered)
-    }
+  const fileQuestionTF = (str) => {
+    let types = str.split("\n\n")
+    types[0] = types[0].slice(10);
+    types[1] = ["True","False"];
+    types[2] = types[2].split(" ").slice(-1)
+    console.log(types);
+  }
+
+  const fileQuestionFTB = (str) => {
+    console.log(str)
+  }
 
   return (
     <div>

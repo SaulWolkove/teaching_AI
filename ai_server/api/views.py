@@ -11,8 +11,10 @@ from rest_framework.response import Response
 
 def main(request,topic, difficulty, questionType):
    
-
-    prompt = f'give me one question with the answer, {questionType}, on the topic of {topic}, at difficulty level {difficulty}. Label the question, the options and the answer'
+    extra = "Label the question, the options and the answer"
+    if questionType == "MC":
+        extra = extra + " and give 4 multiple choice options"
+    prompt = f'give me one question with the answer, {questionType}, on the topic of {topic}, at difficulty level {difficulty}. {extra}'
 
     
 
