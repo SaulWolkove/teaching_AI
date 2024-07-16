@@ -16,10 +16,11 @@ function App() {
         e.preventDefault();
         try {
             let responseData = await getResponse(topic, difficulty,questionType);
-            if(questionType == "MC"){
+            if(questionType === "MC"){
               responseData = fileQuestionMC(responseData)
-            } else if (questionType == "TF"){
+            } else if (questionType === "TF"){
               responseData = fileQuestionTF(responseData)
+              console.log(responseData)
             }
             setResponse(responseData); // Update state with the response data
         } catch (error) {
@@ -39,29 +40,36 @@ function App() {
       }
   
       let question = str.slice(startOfQuestion, endOfQuestions).trim();
+
       let startOfOptions = endOfQuestions + lengthOfPreceding;
       let endOfOptions = str.indexOf("Answer:");
-      let options = str.slice(startOfOptions-2, endOfOptions).split("\n");
+      let options = str.slice(startOfOptions, endOfOptions).split("\n");
 
-      options = options.slice(0,4);
+      options = options.slice(1,5);
   
       let answer = str.slice(endOfOptions + "Answer:".length).trim();
 
       const filtered = {
           question: question,
           options: options,
-          answer: answer
+          answer: answer,
+          qType: "mc"
       };
   
       return filtered;
   };
 
   const fileQuestionTF = (str) => {
-    let types = str.split("\n\n")
-    types[0] = types[0].slice(10);
-    types[1] = ["True","False"];
-    types[2] = types[2].split(" ").slice(-1)
-    console.log(types);
+    let types = str.split(":")
+
+    const filtered = {
+      question: types[1].split("\n")[0],
+      options: ["true","false"],
+      answer: types[2],
+      qType: "tf"
+    };
+    console.log(filtered)
+    return filtered
   }
 
   const fileQuestionFTB = (str) => {
