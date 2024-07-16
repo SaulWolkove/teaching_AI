@@ -37,6 +37,24 @@ def main(request,topic, difficulty, questionType):
 
     return HttpResponse(chat_with_gpt(prompt))
 
+def teach(request,topic, answer, question):
+    prompt = f"elaborate on why {answer} is correct to the question {question} on the topic of {topic}"
+
+    client = OpenAI(
+        api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH",
+    )
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    model="gpt-3.5-turbo",
+     )
+    return HttpResponse(chat_completion.choices[0].message.content.strip())
+
+
 @api_view(['POST'])
 def send_data(request):
     if request.method == 'POST':

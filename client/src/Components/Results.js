@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { postPair } from "../APIs"
+import { postPair, getTeach } from "../APIs"
 
 export default function Results({content, prompt, difficulty, topic}){
     const [selected, setSelected] = useState("")

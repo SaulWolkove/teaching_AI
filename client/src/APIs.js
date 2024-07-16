@@ -17,6 +17,25 @@ async function getResponse(topic, difficulty,questionType) {
     }
 }
 
+async function getTeach(topic, question,answer) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/response/teach/${topic}/${question}/${answer}`, {
+            method: "GET",
+            headers: {
+                'X-CSRFToken': "rbOUQhj5iY88sLgWVJgyEtmVCh6BwWGl"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.text();
+    } catch (error) {
+        throw error; // Re-throw the error for further handling
+    }
+}
+
 async function postPair(prompt,returned, difficulty, topic) {
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/save/`, {
@@ -43,4 +62,4 @@ async function postPair(prompt,returned, difficulty, topic) {
     }
 }
 
-module.exports = {getResponse, postPair}
+module.exports = {getResponse, postPair, getTeach}
