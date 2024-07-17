@@ -19,7 +19,7 @@ async function getResponse(topic, difficulty,questionType) {
 
 async function getTeach(topic, question,answer) {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/response/teach/${topic}/${question}/${answer}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/response/teach/say why ${answer} is the answer to the question ${question}`, {
             method: "GET",
             headers: {
                 'X-CSRFToken': "rbOUQhj5iY88sLgWVJgyEtmVCh6BwWGl"

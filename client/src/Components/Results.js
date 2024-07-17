@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react"
-import { postPair } from "../APIs"
-import {Grid, Typography, Button} from "@mui/material"
-import { getExplain, postPair } from "../APIs";
+import {Grid, Typography, Button, CardContent, Card, IconButton} from "@mui/material"
+import { getTeach, postPair } from "../APIs";
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Results({content, prompt, difficulty, topic}){
     const [outcome, setOutcome] = useState(2);
     const [explanation, setExplanation] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [show, setShow] = useState(false);
+
+
 
     const submitPair = () => {
         if( prompt === "" || content === ""){
@@ -20,6 +24,7 @@ export default function Results({content, prompt, difficulty, topic}){
         // Update state when someProp changes
         setOutcome(2);
         setExplanation("");
+        setShow(false);
       }, [content]);
 
     const colors = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFECB3']; // Array of background colors
@@ -32,12 +37,54 @@ export default function Results({content, prompt, difficulty, topic}){
         }
     }
 
-    const submitExplain = () => {
-        getExplain(content.question, content.answer);
-    }
+    useEffect(() => {
+      const fetchTeachData = async () => {
+        try {
+          setLoading(true); // Set loading state to true
+          const teachData = await getTeach(topic, content.question, content.answer);
+          setExplanation(teachData); // Set fetched data to explanation state
+          setLoading(false); // Set loading state to false after fetching data
+        } catch (error) {
+          setLoading(false); // Set loading state to false in case of error
+        }
+      };
+  
+      fetchTeachData();
+    }, [topic, content]);
+  
 
     return (
         <div style={{ padding: '20px', fontSize: '1.5em', paddingTop:"100px" }}>
+          {!loading && show && <Card
+        sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 1000,
+        width: '60vw', // 60% of viewport width
+        maxWidth: '600px', // Maximum width of 600px
+        maxHeight: '80vh', // Maximum height of 80% of viewport height
+        overflow: 'auto', // Enable scrolling if content exceeds dimensions
+        backgroundColor: '#ffffff', // Solid white background color
+        boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)', // Optional: Adds a subtle shadow
+        padding: '16px', // Optional: Add padding for better content spacing
+      }}>
+      <CardContent>
+        <Typography variant="h5" component="div">
+          Here's Why
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          {explanation}
+        </Typography>
+        <IconButton
+          aria-label="close"
+          sx={{ position: 'absolute', top: 0, right: 0 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </CardContent>
+    </Card>}
           <div>
             <div style={{ marginBottom: '20px' }}>
               <Typography variant="h4" component="div">
@@ -62,12 +109,11 @@ export default function Results({content, prompt, difficulty, topic}){
                   }}
                   onClick={()=>submitGuess(option)}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-10px)';
                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.boxShadow = 'none';
+                    setShow(false);
                     }}>
                     
                     <Typography variant="h6" component="div">
@@ -76,8 +122,8 @@ export default function Results({content, prompt, difficulty, topic}){
                             Correct
                         </div>}
                       {option}
-                      {outcome != 2 && option === content.answer &&
-                        <div onClick = {submitExplain}>
+                      {outcome != 2 && option === content.answer && option === content.answer &&
+                        <div onClick = {()=>setShow(true)}>
                             Find Out Why
                         </div>}
                     </Typography>

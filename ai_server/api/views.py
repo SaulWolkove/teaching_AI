@@ -40,8 +40,7 @@ def main(request,topic, difficulty, questionType):
 
     return HttpResponse(chat_with_gpt(prompt))
 
-def teach(request,topic, answer, question):
-    prompt = f"elaborate on why {answer} is correct to the question {question} on the topic of {topic}"
+def teach(request,topic):
 
     client = OpenAI(
         api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH",
@@ -50,7 +49,7 @@ def teach(request,topic, answer, question):
         messages=[
             {
                 "role": "user",
-                "content": prompt,
+                "content": topic,
             }
         ],
     model="gpt-3.5-turbo",
