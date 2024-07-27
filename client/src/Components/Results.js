@@ -2,23 +2,19 @@ import { useState, useEffect } from "react"
 import {Grid, Typography, Button, CardContent, Card, IconButton} from "@mui/material"
 import { getTeach, postPair } from "../APIs";
 import CloseIcon from '@mui/icons-material/Close';
+import SchoolIcon from '@mui/icons-material/School';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-export default function Results({content, prompt, difficulty, topic}){
+export default function Results({content, prompt, difficulty, topic, postPair}){
     const [outcome, setOutcome] = useState(2);
     const [explanation, setExplanation] = useState("");
     const [loading, setLoading] = useState(true);
     const [show, setShow] = useState(false);
+    const [accuracy, setAccuracy] = useState(0);
 
+    let numGuesses = 0;
+    let numCorrect = 0;
 
-
-    const submitPair = () => {
-        if( prompt === "" || content === ""){
-            return
-        }
-        else{
-            postPair(prompt, content, difficulty, topic)
-        }
-    }
 
     useEffect(() => {
         // Update state when someProp changes
@@ -30,11 +26,16 @@ export default function Results({content, prompt, difficulty, topic}){
     const colors = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFECB3']; // Array of background colors
 
     const submitGuess = (option) => {
+      numGuesses+=1;
+      if(outcome == 2){
         if (option === content.answer){
             setOutcome(1)
+            numCorrect+=1
         }else{
             setOutcome(0)
         }
+        setAccuracy(numGuesses/numCorrect)
+      }
     }
 
     useEffect(() => {
@@ -71,7 +72,7 @@ export default function Results({content, prompt, difficulty, topic}){
         padding: '16px', // Optional: Add padding for better content spacing
       }}>
       <CardContent>
-        <Typography variant="h5" component="div">
+        <Typography variant="h4" component="div">
           Here's Why
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
@@ -80,6 +81,7 @@ export default function Results({content, prompt, difficulty, topic}){
         <IconButton
           aria-label="close"
           sx={{ position: 'absolute', top: 0, right: 0 }}
+          onClick={()=>setShow(false)}
         >
           <CloseIcon />
         </IconButton>
@@ -95,7 +97,7 @@ export default function Results({content, prompt, difficulty, topic}){
               {content && content.options.map((option, index) => (
                 <Grid item xs={6} key={index}>
                   <div style={{ 
-                    backgroundColor: (outcome == 0 && option === content.answer) ? "#ffbf00": (outcome == 1 && option === content.answer) ? "#4ae54a" : colors[index % colors.length], 
+                    backgroundColor: (outcome == 0 && option === content.answer) ? "#ffbf00": (outcome == 1 && option === content.answer) ? "#22b600" : colors[index % colors.length], 
                     opacity: outcome !== 2 && option !== content.answer ? 0.5 : 1,
                     padding: '20px', 
                     borderRadius: '10px',
@@ -105,6 +107,7 @@ export default function Results({content, prompt, difficulty, topic}){
                     justifyContent: 'center',
                     cursor: 'pointer',
                     transition: 'transform 0.3s, box-shadow 0.3s, background-color 0.5s',
+                    color: (outcome == 1 && option === content.answer) ? "#F7F7FF" : "black" 
 
                   }}
                   onClick={()=>submitGuess(option)}
@@ -113,18 +116,13 @@ export default function Results({content, prompt, difficulty, topic}){
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = 'none';
-                    setShow(false);
                     }}>
                     
                     <Typography variant="h6" component="div">
-                        {outcome == 1 && option === content.answer &&
-                        <div>
-                            Correct
-                        </div>}
                       {option}
                       {outcome != 2 && option === content.answer && option === content.answer &&
-                        <div onClick = {()=>setShow(true)}>
-                            Find Out Why
+                        <div onClick = {()=>setShow(true)} style={{paddingTop:"20px", color:"white",}}>
+                            <SchoolIcon/>   Learn Here
                         </div>}
                     </Typography>
                   </div>
@@ -136,22 +134,16 @@ export default function Results({content, prompt, difficulty, topic}){
             <Button 
               variant="contained" 
               color="primary" 
-              onClick={submitPair} 
+              onClick={postPair} 
               style={{ marginTop: '20px', fontSize: '1em' }}
             >
-              Like this Question?
+              Like this Question? <ThumbUpIcon style = {{marginLeft:"20px"}}/>
+              
             </Button>
           )}
+          {accuracy}
         </div>
       );
     };
 
 
-/*
-{content.options.map((option)=>(
-    <div>
-        {option}
-    </div>
-))
-}
-*/

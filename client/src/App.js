@@ -4,25 +4,33 @@ import Banner from "./Components/Banner"
 import PromptMenu from "./Components/PromptMenu"
 import Results from "./Components/Results"
 import { useState } from 'react';
-import { getResponse } from './APIs';
+import { getResponse, postPair } from './APIs';
 function App() {
   
   const [response,setResponse] = useState("");
   const [topic,setTopic] = useState("");
   const [difficulty,setDifficulty] = useState("");
-  
+  const [rawResponse,setRawResponse] = useState("");
+  const [starting,setStarting] = useState(true);
+
+
+
+
 
     const submitPrompt = async (e, topic, difficulty, questionType) => {
+
         e.preventDefault();
         try {
-            let responseData = await getResponse(topic, difficulty,questionType);
-            if(questionType === "MC"){
+            let responseData = await getResponse(topic, difficulty,questionType === "multipleChoice" ? "MC" : "TF");
+            setRawResponse(responseData)
+            if(questionType === "multipleChoice"){
               responseData = fileQuestionMC(responseData)
-            } else if (questionType === "TF"){
+            } else if (questionType === "trueOrFalse"){
               responseData = fileQuestionTF(responseData)
-              console.log(responseData)
             }
             setResponse(responseData); // Update state with the response data
+            setStarting(false)
+
         } catch (error) {
             console.error('Error fetching response:', error);
             // Handle error if necessary
@@ -62,32 +70,41 @@ function App() {
   const fileQuestionTF = (str) => {
     let types = str.split(":")
 
+    const answer = types[2].trim().toLowerCase()
+    if (answer.endsWith('.')) {
+      answer = answer.slice(0, -1);
+    }
+
     const filtered = {
       question: types[1].split("\n")[0],
       options: ["true","false"],
-      answer: types[2],
+      answer: answer,
       qType: "tf"
     };
     console.log(filtered)
     return filtered
   }
 
-  const fileQuestionFTB = (str) => {
-    console.log(str)
+  const submitPair =()=>{
+
+
+    postPair(rawResponse, difficulty, topic)
   }
 
   return (
     <div>
       <Banner/>
 
-      <Grid item container spacing={2} sx={{height:"100%"}}>
+      {!starting ? <Grid item container spacing={2} sx={{height:"100%"}}>
         <Grid item xs={4}>
             <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic}/>
         </Grid>
         <Grid item xs={8}>
-          <Results content={response} prompt={prompt} topic={topic} difficulty={difficulty}/>
+          <Results content={response} prompt={topic} topic={topic} difficulty={difficulty} postPair={submitPair}/>
         </Grid>
-      </Grid>
+      </Grid> : 
+            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic}/>
+}
     </div>
     
   );

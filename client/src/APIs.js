@@ -36,7 +36,7 @@ async function getTeach(topic, question,answer) {
     }
 }
 
-async function postPair(prompt,returned, difficulty, topic) {
+async function postPair(returned, difficulty, topic) {
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/save/`, {
             method: "POST",
@@ -45,7 +45,7 @@ async function postPair(prompt,returned, difficulty, topic) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                prompt: prompt,
+                prompt: `give me one question with the answer, on the topic of ${topic}, at difficulty level ${difficulty}`,
                 response: returned,
                 difficulty: difficulty,
                 topic: topic
