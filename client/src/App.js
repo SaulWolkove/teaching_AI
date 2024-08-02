@@ -12,6 +12,8 @@ function App() {
   const [difficulty,setDifficulty] = useState("");
   const [rawResponse,setRawResponse] = useState("");
   const [starting,setStarting] = useState(true);
+  const [redo, setRedo] = useState(false);
+
 
 
 
@@ -97,13 +99,13 @@ function App() {
 
       {!starting ? <Grid item container spacing={2} sx={{height:"100%"}}>
         <Grid item xs={4}>
-            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic}/>
+            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic} redo={redo} setRedo={setRedo}/>
         </Grid>
         <Grid item xs={8}>
           <Results content={response} prompt={topic} topic={topic} difficulty={difficulty} postPair={submitPair}/>
         </Grid>
       </Grid> : 
-            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic}/>
+            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic} redo={redo} setRedo={setRedo}/>
 }
     </div>
     

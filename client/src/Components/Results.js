@@ -11,9 +11,9 @@ export default function Results({content, prompt, difficulty, topic, postPair}){
     const [loading, setLoading] = useState(true);
     const [show, setShow] = useState(false);
     const [accuracy, setAccuracy] = useState(0);
+    const [numGuesses, setNumGuesses] = useState(0);
+    const [numCorrect, setNumCorrect] = useState(0);
 
-    let numGuesses = 0;
-    let numCorrect = 0;
 
 
     useEffect(() => {
@@ -26,17 +26,23 @@ export default function Results({content, prompt, difficulty, topic, postPair}){
     const colors = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFECB3']; // Array of background colors
 
     const submitGuess = (option) => {
-      numGuesses+=1;
-      if(outcome == 2){
-        if (option === content.answer){
-            setOutcome(1)
-            numCorrect+=1
-        }else{
-            setOutcome(0)
+      setNumGuesses(prevNumGuesses => prevNumGuesses + 1);
+  
+      if (outcome === 2) {
+        if (option === content.answer) {
+          setNumCorrect(prevNumCorrect => prevNumCorrect + 1);
+          setOutcome(1);
+        } else {
+          setOutcome(0);
         }
-        setAccuracy(numGuesses/numCorrect)
       }
-    }
+    };
+  
+    useEffect(() => {
+      const acc = numCorrect / numGuesses;
+      setAccuracy(isNaN(acc) ? 0 : acc);
+    }, [numGuesses, numCorrect]);
+    
 
     useEffect(() => {
       const fetchTeachData = async () => {
@@ -55,7 +61,7 @@ export default function Results({content, prompt, difficulty, topic, postPair}){
   
 
     return (
-        <div style={{ padding: '20px', fontSize: '1.5em', paddingTop:"100px" }}>
+        <div style={{ padding: '20px', fontSize: '1.5em', paddingTop:"50px" }}>
           {!loading && show && <Card
         sx={{
         position: 'absolute',
@@ -88,8 +94,12 @@ export default function Results({content, prompt, difficulty, topic, postPair}){
       </CardContent>
     </Card>}
           <div>
-            <div style={{ marginBottom: '20px' }}>
-              <Typography variant="h4" component="div">
+            <div style={{ marginBottom: '20px', fontSize: '0.5em'}}>
+              {numGuesses != 0 && <div style={{color:"#018749"}}>
+                   Accuracy: %{accuracy * 100}<br/>
+              {numCorrect}/{numGuesses} Questions answered correctly
+              </div>}
+              <Typography variant="h5" component="div">
                 {content.question}
               </Typography>
             </div>
@@ -141,7 +151,7 @@ export default function Results({content, prompt, difficulty, topic, postPair}){
               
             </Button>
           )}
-          {accuracy}
+            
         </div>
       );
     };

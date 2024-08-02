@@ -8,16 +8,23 @@ import FormLabel from '@mui/material/FormLabel';
 import { Button, Typography, TextField, Box } from "@mui/material";
 
 
-export default function PromptMenu({submitPrompt, setTopic, setDifficulty, difficulty, topic}){
+export default function PromptMenu({submitPrompt, setTopic, setDifficulty, difficulty, topic, redo, setRedo}){
     const [selectedOption, setSelectedOption] = useState('multipleChoice');
-    const [redo, setRedo] = useState(false);
 
     const handleChange = (event) => {
         setSelectedOption(event.target.value);
     }
     
+    const handleTextChange = (event) => {
+        event.preventDefault()
+        setTopic(event.target.value)
+        setRedo(false)
 
-    
+    }
+
+    const checkValidSubmission = () => {
+        return topic !== "" && difficulty !== ""
+    }
 
     return(
         <div style={{height:"calc(100vh - 80px)", justifyContent:"center", alignItems:"center", display:"flex"}}>
@@ -26,7 +33,7 @@ export default function PromptMenu({submitPrompt, setTopic, setDifficulty, diffi
                 Topic Input
                 */}
                 <Typography variant="button" sx={{textAlign:"center", color:"grey"}}>Create Your Own Questions and Answers</Typography>
-                <TextField fullWidth label="Topic" id="fullWidth" type="text" onChange={(e)=>setTopic(e.target.value)} sx={{borderRadius:"30px"}}></TextField>
+                <TextField fullWidth label="Topic" id="fullWidth" type="text" value={topic} onChange={handleTextChange} sx={{borderRadius:"30px"}}></TextField>
                 {/* 
                 Difficulty level options 
                 */}
@@ -36,6 +43,7 @@ export default function PromptMenu({submitPrompt, setTopic, setDifficulty, diffi
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group"
+                        value={difficulty}
                         onChange={(event)=>setDifficulty(event.target.value)}
                     >
                         <FormControlLabel value="Easy" control={<Radio />} label="Easy" />
@@ -50,7 +58,7 @@ export default function PromptMenu({submitPrompt, setTopic, setDifficulty, diffi
         <FormControlLabel value="multipleChoice" control={<Radio color="primary" />} label="Multiple Choice" />
         <FormControlLabel value="trueOrFalse" control={<Radio color="primary" />} label="True or False" />
       </RadioGroup>
-      <Button variant="contained" color="success" type="submit" onClick={()=>setRedo(true)}>{!redo ? "Submit Question" : "Regenerate Question"}</Button>
+      <Button variant="contained" disabled = {!checkValidSubmission()} color="success" type="submit" onClick={()=>setRedo(true)}>{!redo ? "Submit Question" : "Regenerate Question"}</Button>
 
     </Box>
                 </FormControl>

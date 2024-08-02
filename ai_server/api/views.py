@@ -6,7 +6,8 @@ from rest_framework import status
 from .serializers import GPTTrainingSerializer, HeavyTrainingSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from .models import GPTTraining
+import json
 # Create your views here.
 
 def main(request,topic, difficulty, questionType):
@@ -88,3 +89,31 @@ def explain(question,answer):
         return chat_completion.choices[0].message.content.strip()
 
     return HttpResponse(chat_with_gpt(prompt))
+
+def export_to_jsonl(request):
+    pairings = GPTTraining.objects.all()
+    #response = HttpResponse(content_type='application/jsonl')
+    #response['Content-Disposition'] = 'attachment; filename=gpt_exports.jsonl'
+
+    # Get the pairings as a list of dictionaries
+    pairing_fields = pairings.values('prompt', 'response')
+
+    # Write each pairing as a JSON object in a new line
+    with open('gpt_exports.jsonl', 'w', encoding='utf-8') as f:
+        for pairing in pairing_fields:
+            formatted_pairing = {
+            'prompt': pairing['prompt'],
+            'completion': pairing['response']  # Change 'response' to 'completion'
+        }
+            f.write(json.dumps(formatted_pairing) + '\n')
+
+
+    client = OpenAI(api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH")
+    file = client.files.create(
+    file=open("gpt_exports.jsonl", "rb"),
+    purpose="fine-tune"
+    )
+    return client.fine_tuning.jobs.create(
+  training_file=file, 
+  model="gpt-3.5-turbo"
+    )
