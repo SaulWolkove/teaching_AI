@@ -7,12 +7,16 @@ from .serializers import GPTTrainingSerializer, HeavyTrainingSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import GPTTraining
+import os
+from dotenv import load_dotenv
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 # Create your views here.
 
 def chat_with_gpt(prompt):
     #defines function to query gpt based on prompt
         client = OpenAI(
-        api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH",
+        api_key= API_KEY,
     )
         chat_completion = client.chat.completions.create(
         messages=[

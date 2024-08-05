@@ -23,7 +23,7 @@ export default function Banner() {
             <MenuIcon />
           </AttractionsSharpIcon>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AI Teaching Assistant
+            AI Learning Assistant
           </Typography>
         </Toolbar>
       </AppBar>

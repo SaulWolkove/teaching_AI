@@ -5,7 +5,9 @@ import json
 import django
 from django.core.management.base import BaseCommand
 from api.models import GPTTraining
-
+from dotenv import load_dotenv
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 class Command(BaseCommand):
     help = 'Description of your command'
 
@@ -36,7 +38,7 @@ class Command(BaseCommand):
                 f.write(json.dumps(formatted_pairing) + '\n')
 
         #open up client for fine-tuning job, export file to fine-tune
-        client = OpenAI(api_key="sk-proj-61toAytXsa7MXjQRwzS6T3BlbkFJgmmLXYAic3VQyVN1oEMH")
+        client = OpenAI(api_key=API_KEY)
         file = client.files.create(
         file=open("gpt_exports.jsonl", "rb"),
         purpose="fine-tune"
@@ -45,3 +47,4 @@ class Command(BaseCommand):
     training_file=file, 
     model="gpt-3.5-turbo"
         )
+    
