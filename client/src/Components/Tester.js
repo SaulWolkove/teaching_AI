@@ -1,5 +1,5 @@
 import { useState } from "react"
-import {getResponse, postPair} from "../APIs"
+import {getResponse, postPair} from "../API"
 
 
 export default function Tester(){

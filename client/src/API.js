@@ -1,4 +1,5 @@
 async function getResponse(topic, difficulty,questionType) {
+    //asynchronous function to fetch question/answer pairs
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/response/${topic}/${difficulty}/${questionType}`, {
             method: "GET",
@@ -18,6 +19,7 @@ async function getResponse(topic, difficulty,questionType) {
 }
 
 async function getTeach(topic, question,answer) {
+    //asynchronous function to fetch question/answer pairs
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/response/teach/say why ${answer} is the answer to the question ${question}`, {
             method: "GET",
@@ -37,6 +39,7 @@ async function getTeach(topic, question,answer) {
 }
 
 async function postPair(returned, difficulty, topic) {
+    //asynchronous function to post prompt/content pairs to the db
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/save/`, {
             method: "POST",
@@ -61,5 +64,5 @@ async function postPair(returned, difficulty, topic) {
         throw error; // Re-throw the error for further handling
     }
 }
-
+//export functions
 module.exports = {getResponse, postPair, getTeach}

@@ -1,112 +1,59 @@
+import { useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
+
 import Banner from "./Components/Banner"
 import PromptMenu from "./Components/PromptMenu"
 import Results from "./Components/Results"
-import { useState } from 'react';
-import { getResponse, postPair } from './APIs';
+import { getResponse, postPair } from './API';
+import { fileQuestionMC, fileQuestionTF } from './ComponentFunctions/QuestionFiler';
+
 function App() {
-  
-  const [response,setResponse] = useState("");
-  const [topic,setTopic] = useState("");
-  const [difficulty,setDifficulty] = useState("");
-  const [rawResponse,setRawResponse] = useState("");
-  const [starting,setStarting] = useState(true);
-  const [redo, setRedo] = useState(false);
 
 
+  const [response,setResponse] = useState(""); //response data for question/answer
+  const [topic,setTopic] = useState(""); //topic of question
+  const [difficulty,setDifficulty] = useState(""); //difficulty of question
+  const [rawResponse,setRawResponse] = useState(""); //raw response data for db posting
+  const [starting,setStarting] = useState(true); // boolean value to determine if user has prompted the prompt menu yet
+  const [redo, setRedo] = useState(false); // boolean value to determine if user is redoing a prompt or starting a new prompt
 
-
-
-
-    const submitPrompt = async (e, topic, difficulty, questionType) => {
-
-        e.preventDefault();
-        try {
-            let responseData = await getResponse(topic, difficulty,questionType === "multipleChoice" ? "MC" : "TF");
-            setRawResponse(responseData)
-            if(questionType === "multipleChoice"){
-              responseData = fileQuestionMC(responseData)
-            } else if (questionType === "trueOrFalse"){
-              responseData = fileQuestionTF(responseData)
-            }
-            setResponse(responseData); // Update state with the response data
-            setStarting(false)
-
-        } catch (error) {
-            console.error('Error fetching response:', error);
-            // Handle error if necessary
+  const submitPrompt = async (e, topic, difficulty, questionType) => {
+    //Submits prompt to API and sets response data to string of filed question
+      e.preventDefault();
+      try {
+        //fetch data from api
+        let responseData = await getResponse(topic, difficulty,questionType === "multipleChoice" ? "MC" : "TF");
+        setRawResponse(responseData)
+        //file question from string to data object
+        if(questionType === "multipleChoice"){
+          responseData = fileQuestionMC(responseData)
+        } else if (questionType === "trueOrFalse"){
+          responseData = fileQuestionTF(responseData)
         }
-    }
-
-    const fileQuestionMC = (str) => {
-      let startOfQuestion = str.indexOf("Question: ") + "Question: ".length;
-      let endOfQuestions = str.indexOf("Options:");
-      let lengthOfPreceding = "Options:".length;
-      
-      if (endOfQuestions === -1) {
-          endOfQuestions = str.indexOf("A)");
-          lengthOfPreceding = 2;
+        //set the response to the response data object 
+        setResponse(responseData); 
+        setStarting(false)
+      } catch (error) {
+          console.error('Error fetching response:', error);
+          // Handle error if necessary
       }
-  
-      let question = str.slice(startOfQuestion, endOfQuestions).trim();
-
-      let startOfOptions = endOfQuestions + lengthOfPreceding;
-      let endOfOptions = str.indexOf("Answer:");
-      let options = str.slice(startOfOptions, endOfOptions).split("\n");
-
-      options = options.slice(1,5);
-  
-      let answer = str.slice(endOfOptions + "Answer:".length).trim();
-
-      const filtered = {
-          question: question,
-          options: options,
-          answer: answer,
-          qType: "mc"
-      };
-  
-      return filtered;
-  };
-
-  const fileQuestionTF = (str) => {
-    let types = str.split(":")
-
-    const answer = types[2].trim().toLowerCase()
-    if (answer.endsWith('.')) {
-      answer = answer.slice(0, -1);
-    }
-
-    const filtered = {
-      question: types[1].split("\n")[0],
-      options: ["true","false"],
-      answer: answer,
-      qType: "tf"
-    };
-    console.log(filtered)
-    return filtered
   }
 
-  const submitPair =()=>{
-
-
-    postPair(rawResponse, difficulty, topic)
-  }
 
   return (
     <div>
       <Banner/>
-
-      {!starting ? <Grid item container spacing={2} sx={{height:"100%"}}>
+      {!starting ? 
+      <Grid item container spacing={2} sx={{height:"100%"}}>
         <Grid item xs={4}>
             <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic} redo={redo} setRedo={setRedo}/>
         </Grid>
         <Grid item xs={8}>
-          <Results content={response} prompt={topic} topic={topic} difficulty={difficulty} postPair={submitPair}/>
+          <Results content={response} topic={topic} postPair={()=>postPair(rawResponse, difficulty, topic)}/>
         </Grid>
       </Grid> : 
-            <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic} redo={redo} setRedo={setRedo}/>
-}
+      <PromptMenu submitPrompt={submitPrompt} setTopic={setTopic} setDifficulty={setDifficulty} difficulty={difficulty} topic={topic} redo={redo} setRedo={setRedo}/>
+      }
     </div>
     
   );
